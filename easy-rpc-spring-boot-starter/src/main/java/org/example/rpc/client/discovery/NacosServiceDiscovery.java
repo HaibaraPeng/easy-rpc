@@ -22,7 +22,7 @@ public class NacosServiceDiscovery implements ServiceDiscovery {
 
     public NacosServiceDiscovery(RpcDiscoveryProperties properties) {
         try {
-            namingService = NamingFactory.createNamingService(properties.getRegisterAddress());
+            namingService = NamingFactory.createNamingService(properties.getAddress());
         } catch (NacosException e) {
             log.error("Nacos client init error", e);
             throw new RpcException(e.getMessage());

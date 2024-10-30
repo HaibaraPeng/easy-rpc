@@ -1,4 +1,4 @@
-package org.example.rpc.client.discovery;
+package org.example.rpc.common;
 
 /**
  * 注册中心枚举
@@ -6,13 +6,13 @@ package org.example.rpc.client.discovery;
  * @Author Roc
  * @Date 2024/10/29 16:00
  */
-public enum RegisterEnums {
+public enum RegisterTypeEnums {
 
     NACOS("nacos");
 
     private final String name;
 
-    RegisterEnums(String name) {
+    RegisterTypeEnums(String name) {
         this.name = name;
     }
 
