@@ -1,2 +1,11 @@
 server:
   port: 8080
+
+rpc:
+  discovery:
+    type: nacos
+    address: 192.168.190.42:8848
+  registry:
+    type: nacos
+    address: 192.168.190.42:8848
+    expose-port: 8888

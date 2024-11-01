@@ -14,4 +14,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class RpcRegistryProperties {
     private String type;
     private String address;
+    private Integer exposePort = 6666;
 }

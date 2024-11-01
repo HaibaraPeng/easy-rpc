@@ -8,12 +8,6 @@ package org.example.rpc.common;
  */
 public enum RegisterTypeEnums {
 
-    NACOS("nacos");
-
-    private final String name;
-
-    RegisterTypeEnums(String name) {
-        this.name = name;
-    }
+    NACOS
 
 }
