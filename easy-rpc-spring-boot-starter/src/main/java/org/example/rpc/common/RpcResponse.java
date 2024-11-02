@@ -2,6 +2,7 @@ package org.example.rpc.common;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  * @Date 2024/10/29 15:14
  */
 @Data
-public class RpcResponse {
+public class RpcResponse implements Serializable {
 
     private String status;
     private Object data;

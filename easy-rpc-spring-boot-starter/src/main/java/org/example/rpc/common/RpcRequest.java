@@ -1,5 +1,7 @@
 package org.example.rpc.common;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.Map;
  * @Author Roc
  * @Date 2024/10/29 15:09
  */
+@Data
 public class RpcRequest implements Serializable {
     private String serviceName;
     private String methodName;
