@@ -15,7 +15,7 @@ import java.util.Map;
 @Data
 public class RpcResponse implements Serializable {
 
-    private String status;
+    private Integer status;
     private Object data;
     private Map<String, String> headers = new HashMap<>();
     private Exception exception;

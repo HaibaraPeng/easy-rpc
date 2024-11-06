@@ -46,7 +46,7 @@ public class ServiceInterfaceInfo {
     public ServiceInterfaceInfo() {
     }
 
-    public ServiceInterfaceInfo(String serviceName,String ip, int port) {
+    public ServiceInterfaceInfo(String serviceName, String ip, int port) {
         this.serviceName = serviceName;
         this.ip = ip;
         this.port = port;

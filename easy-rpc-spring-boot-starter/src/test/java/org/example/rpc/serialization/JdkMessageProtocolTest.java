@@ -22,7 +22,7 @@ class JdkMessageProtocolTest {
         request = new RpcRequest("org.example.rpc.example.provider.api.ExampleOneService", "testMethod", null, null);
 
         response = new RpcResponse();
-        response.setStatus(String.valueOf(HttpStatus.SC_OK));
+        response.setStatus(HttpStatus.SC_OK);
     }
 
     @Test
