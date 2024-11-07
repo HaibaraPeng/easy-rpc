@@ -37,6 +37,11 @@
                 <artifactId>easy-rpc-spring-boot-starter</artifactId>
                 <version>${easy-rpc.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.example.rpc</groupId>
+                <artifactId>easy-rpc-example-provider</artifactId>
+                <version>${easy-rpc.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -1,7 +1,9 @@
 package org.example.rpc.config;
 
 import com.alibaba.nacos.common.utils.StringUtils;
+import org.example.rpc.client.ClientProxyFactory;
 import org.example.rpc.client.discovery.NacosServiceDiscovery;
+import org.example.rpc.client.network.netty.NettyRpcClient;
 import org.example.rpc.common.RegisterTypeEnums;
 import org.example.rpc.client.discovery.ServiceDiscovery;
 import org.example.rpc.listener.DefaultRpcListener;
@@ -50,16 +52,17 @@ public class AutoConfiguration {
         return null;
     }
 
-//    @Bean
-//    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery) {
-//        return new ClientProxyFactory(serviceDiscovery, new JdkMessageProtocol(), new NettyRpcClient());
-//    }
+    @Bean
+    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery) {
+        return new ClientProxyFactory(serviceDiscovery, new JdkMessageProtocol(), new NettyRpcClient());
+    }
 
     @Bean
     public DefaultRpcListener defaultRpcListener(@Autowired RpcRegistryProperties rpcRegistryProperties,
                                                  @Autowired ServiceRegistry serviceRegistry,
+                                                 @Autowired ClientProxyFactory clientProxyFactory,
                                                  @Autowired RpcServer rpcServer) {
-        return new DefaultRpcListener(rpcRegistryProperties, serviceRegistry, null, rpcServer);
+        return new DefaultRpcListener(rpcRegistryProperties, serviceRegistry, clientProxyFactory, rpcServer);
     }
 
     @Bean
