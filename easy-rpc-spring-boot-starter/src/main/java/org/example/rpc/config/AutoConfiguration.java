@@ -5,8 +5,13 @@ import org.example.rpc.client.discovery.NacosServiceDiscovery;
 import org.example.rpc.common.RegisterTypeEnums;
 import org.example.rpc.client.discovery.ServiceDiscovery;
 import org.example.rpc.listener.DefaultRpcListener;
+import org.example.rpc.serialization.JdkMessageProtocol;
+import org.example.rpc.server.network.RequestHandler;
+import org.example.rpc.server.network.RpcServer;
+import org.example.rpc.server.network.netty.NettyRpcServer;
 import org.example.rpc.server.registry.NacosServiceRegistry;
 import org.example.rpc.server.registry.ServiceRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,8 +50,26 @@ public class AutoConfiguration {
         return null;
     }
 
+//    @Bean
+//    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery) {
+//        return new ClientProxyFactory(serviceDiscovery, new JdkMessageProtocol(), new NettyRpcClient());
+//    }
+
     @Bean
-    public DefaultRpcListener defaultRpcListener(RpcRegistryProperties rpcRegistryProperties, ServiceRegistry serviceRegistry) {
-        return new DefaultRpcListener(rpcRegistryProperties, serviceRegistry);
+    public DefaultRpcListener defaultRpcListener(@Autowired RpcRegistryProperties rpcRegistryProperties,
+                                                 @Autowired ServiceRegistry serviceRegistry,
+                                                 @Autowired RpcServer rpcServer) {
+        return new DefaultRpcListener(rpcRegistryProperties, serviceRegistry, null, rpcServer);
+    }
+
+    @Bean
+    public RequestHandler requestHandler(@Autowired ServiceRegistry serviceRegistry) {
+        return new RequestHandler(new JdkMessageProtocol(), serviceRegistry);
+    }
+
+    @Bean
+    public RpcServer rpcServer(@Autowired RpcRegistryProperties registryProperties,
+                               @Autowired RequestHandler requestHandler) {
+        return new NettyRpcServer(registryProperties.getExposePort(), requestHandler);
     }
 }

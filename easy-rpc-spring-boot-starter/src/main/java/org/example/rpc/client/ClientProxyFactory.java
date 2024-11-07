@@ -37,7 +37,7 @@ public class ClientProxyFactory {
      * @return 代理对象
      */
     @SuppressWarnings("unchecked")
-    public <T> T getProxy(Class<T> clazz) {
+    public <T> T getProxyInstance(Class<T> clazz) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, (proxy, method, args) -> {
             // 获取服务信息
             ServiceInterfaceInfo serviceInterfaceInfo = serviceDiscovery.selectOneInstance(clazz.getName());

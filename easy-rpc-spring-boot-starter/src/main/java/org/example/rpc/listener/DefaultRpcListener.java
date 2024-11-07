@@ -2,14 +2,18 @@ package org.example.rpc.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.rpc.annotation.ServiceExpose;
+import org.example.rpc.annotation.ServiceReference;
+import org.example.rpc.client.ClientProxyFactory;
 import org.example.rpc.common.ServiceInterfaceInfo;
 import org.example.rpc.config.RpcRegistryProperties;
+import org.example.rpc.server.network.RpcServer;
 import org.example.rpc.server.registry.ServiceRegistry;
 import org.example.rpc.utils.IpUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -21,12 +25,17 @@ import java.util.Map;
 @Slf4j
 public class DefaultRpcListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    private RpcRegistryProperties rpcRegistryProperties;
-    private ServiceRegistry serviceRegistry;
+    private final RpcRegistryProperties rpcRegistryProperties;
+    private final ServiceRegistry serviceRegistry;
+    private final ClientProxyFactory clientProxyFactory;
+    private final RpcServer rpcServer;
 
-    public DefaultRpcListener(RpcRegistryProperties rpcRegistryProperties, ServiceRegistry serviceRegistry) {
+    public DefaultRpcListener(RpcRegistryProperties rpcRegistryProperties, ServiceRegistry serviceRegistry, ClientProxyFactory clientProxyFactory,
+                              RpcServer rpcServer) {
         this.rpcRegistryProperties = rpcRegistryProperties;
         this.serviceRegistry = serviceRegistry;
+        this.clientProxyFactory = clientProxyFactory;
+        this.rpcServer = rpcServer;
     }
 
     @Override
@@ -36,7 +45,8 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
         if (applicationContext.getParent() == null) {
             // 初始化rpc服务端
             initRpcServer(applicationContext);
-            // 初始化rpc客户端 TODO
+            // 初始化rpc客户端
+            initRpcClient(applicationContext);
         }
     }
 
@@ -50,7 +60,8 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
             registerInstanceInterfaceInfo(beanObj);
         }
 
-        // 启动网络通信服务器，监听客户端请求 TODO
+        // 启动网络通信服务器，监听客户端请求
+        rpcServer.start();
     }
 
     private void registerInstanceInterfaceInfo(Object beanObj) {
@@ -66,6 +77,32 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
                     rpcRegistryProperties.getExposePort(), interfaceClazz, beanObj));
         } catch (Exception e) {
             log.error("Fail to register service: {}", e.getMessage());
+        }
+    }
+
+    private void initRpcClient(ApplicationContext applicationContext) {
+        String[] beanNames = applicationContext.getBeanDefinitionNames();
+        for (String beanName : beanNames) {
+            Class<?> clazz = applicationContext.getType(beanName);
+            if (clazz == null) {
+                continue;
+            }
+
+            Field[] fields = clazz.getDeclaredFields();
+            // 遍历@ServiceReference属性
+            for (Field field : fields) {
+                final ServiceReference serviceReference = field.getAnnotation(ServiceReference.class);
+                if (serviceReference == null) {
+                    continue;
+                }
+
+                try {
+                    field.setAccessible(true);
+                    field.set(applicationContext.getBean(beanName), clientProxyFactory.getProxyInstance(field.getType()));
+                } catch (IllegalAccessException e) {
+                    log.error(String.format("Fail to inject service, bean.name: %s", beanName), e);
+                }
+            }
         }
     }
 }
