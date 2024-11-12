@@ -9,6 +9,7 @@ import org.example.rpc.common.RpcResponse;
  * @Author Roc
  * @Date 2024/10/29 15:11
  */
+@Deprecated
 public interface MessageProtocol {
 
     /**

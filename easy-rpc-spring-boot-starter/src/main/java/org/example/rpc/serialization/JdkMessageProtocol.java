@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
  * @Author Roc
  * @Date 2024/11/2 14:45
  */
+@Deprecated
 public class JdkMessageProtocol implements MessageProtocol {
     @Override
     public byte[] marshallingReqMessage(RpcRequest request) throws Exception {
