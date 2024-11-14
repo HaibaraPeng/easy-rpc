@@ -6,8 +6,13 @@ import org.example.rpc.common.RpcRequest;
 import org.example.rpc.common.RpcResponse;
 import org.example.rpc.common.ServiceInterfaceInfo;
 import org.example.rpc.serialization.MessageProtocol;
+import org.example.rpc.serialization.ObjectInput;
+import org.example.rpc.serialization.ObjectOutput;
+import org.example.rpc.serialization.Serialization;
 import org.example.rpc.server.registry.ServiceRegistry;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 
 /**
@@ -17,23 +22,28 @@ import java.lang.reflect.Method;
 @Slf4j
 public class RequestHandler {
 
-    private final MessageProtocol messageProtocol;
+    private final Serialization serialization;
 
     private final ServiceRegistry serviceRegistry;
 
-    public RequestHandler(MessageProtocol messageProtocol, ServiceRegistry serviceRegistry) {
-        this.messageProtocol = messageProtocol;
+    public RequestHandler(Serialization serialization, ServiceRegistry serviceRegistry) {
+        this.serialization = serialization;
         this.serviceRegistry = serviceRegistry;
     }
 
     public byte[] handleRequest(byte[] data) throws Exception {
-        RpcRequest rpcRequest = messageProtocol.unmarshallingReqMessage(data);
+        ObjectInput deserialize = serialization.deserialize(new ByteArrayInputStream(data));
+        RpcRequest rpcRequest = deserialize.readObject(RpcRequest.class);
         ServiceInterfaceInfo serviceInterfaceInfo = serviceRegistry.getRegisteredObj(rpcRequest.getServiceName());
 
         RpcResponse rpcResponse = new RpcResponse();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutput serialize = serialization.serialize(new ByteArrayOutputStream());
         if (serviceInterfaceInfo == null) {
             rpcResponse.setStatus(HttpStatus.SC_NOT_FOUND);
-            return messageProtocol.marshallingRespMessage(rpcResponse);
+            serialize.writeObject(rpcResponse);
+            serialize.flushBuffer();
+            return byteArrayOutputStream.toByteArray();
         }
 
         try {
@@ -46,6 +56,8 @@ public class RequestHandler {
             rpcResponse.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
             rpcResponse.setException(e);
         }
-        return messageProtocol.marshallingRespMessage(rpcResponse);
+        serialize.writeObject(rpcResponse);
+        serialize.flushBuffer();
+        return byteArrayOutputStream.toByteArray();
     }
 }

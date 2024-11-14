@@ -7,8 +7,12 @@ import org.example.rpc.common.RpcRequest;
 import org.example.rpc.common.RpcResponse;
 import org.example.rpc.common.ServiceInterfaceInfo;
 import org.example.rpc.exception.RpcException;
-import org.example.rpc.serialization.MessageProtocol;
+import org.example.rpc.serialization.ObjectInput;
+import org.example.rpc.serialization.ObjectOutput;
+import org.example.rpc.serialization.Serialization;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Proxy;
 
 /**
@@ -21,12 +25,12 @@ import java.lang.reflect.Proxy;
 public class ClientProxyFactory {
 
     private ServiceDiscovery serviceDiscovery;
-    private MessageProtocol messageProtocol;
+    private Serialization serialization;
     private RpcClient rpcClient;
 
-    public ClientProxyFactory(ServiceDiscovery serviceDiscovery, MessageProtocol messageProtocol, RpcClient rpcClient) {
+    public ClientProxyFactory(ServiceDiscovery serviceDiscovery, Serialization serialization, RpcClient rpcClient) {
         this.serviceDiscovery = serviceDiscovery;
-        this.messageProtocol = messageProtocol;
+        this.serialization = serialization;
         this.rpcClient = rpcClient;
     }
 
@@ -50,13 +54,18 @@ public class ClientProxyFactory {
             final RpcRequest request = new RpcRequest(serviceInterfaceInfo.getServiceName(), method.getName(), method.getParameterTypes(), args);
 
             // 序列化请求
-            byte[] data = messageProtocol.marshallingReqMessage(request);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutput serialize = serialization.serialize(new ByteArrayOutputStream());
+            serialize.writeObject(request);
+            serialize.flushBuffer();
 
             // rpcClient发送消息
-            byte[] byteResponse = rpcClient.sendMessage(data, serviceInterfaceInfo);
+            byte[] byteResponse = rpcClient.sendMessage(byteArrayOutputStream.toByteArray(), serviceInterfaceInfo);
 
             // 解析response
-            RpcResponse rpcResponse = messageProtocol.unmarshallingRespMessage(byteResponse);
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteResponse);
+            ObjectInput deserialize = serialization.deserialize(byteArrayInputStream);
+            RpcResponse rpcResponse = deserialize.readObject(RpcResponse.class);
 
             if (rpcResponse.getException() != null) {
                 throw rpcResponse.getException();

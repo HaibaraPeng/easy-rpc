@@ -36,7 +36,7 @@ public class ServiceInterfaceInfo {
     /**
      * 服务实例对应的实现类，用于后续反射调用
      */
-    private Class<?> clazz;
+    private Class clazz;
 
     /**
      * 服务实例对应的实现类实例，用于后续反射调用

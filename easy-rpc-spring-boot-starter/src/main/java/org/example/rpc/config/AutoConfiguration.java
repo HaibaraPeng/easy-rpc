@@ -7,7 +7,7 @@ import org.example.rpc.client.network.netty.NettyRpcClient;
 import org.example.rpc.common.RegisterTypeEnums;
 import org.example.rpc.client.discovery.ServiceDiscovery;
 import org.example.rpc.listener.DefaultRpcListener;
-import org.example.rpc.serialization.JdkMessageProtocol;
+import org.example.rpc.serialization.jdk.JavaSerialization;
 import org.example.rpc.server.network.RequestHandler;
 import org.example.rpc.server.network.RpcServer;
 import org.example.rpc.server.network.netty.NettyRpcServer;
@@ -54,7 +54,7 @@ public class AutoConfiguration {
 
     @Bean
     public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery) {
-        return new ClientProxyFactory(serviceDiscovery, new JdkMessageProtocol(), new NettyRpcClient());
+        return new ClientProxyFactory(serviceDiscovery, new JavaSerialization(), new NettyRpcClient());
     }
 
     @Bean
@@ -67,7 +67,7 @@ public class AutoConfiguration {
 
     @Bean
     public RequestHandler requestHandler(@Autowired ServiceRegistry serviceRegistry) {
-        return new RequestHandler(new JdkMessageProtocol(), serviceRegistry);
+        return new RequestHandler(new JavaSerialization(), serviceRegistry);
     }
 
     @Bean
