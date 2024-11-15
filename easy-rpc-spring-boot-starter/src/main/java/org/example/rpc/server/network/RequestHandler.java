@@ -38,7 +38,7 @@ public class RequestHandler {
 
         RpcResponse rpcResponse = new RpcResponse();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutput serialize = serialization.serialize(new ByteArrayOutputStream());
+        ObjectOutput serialize = serialization.serialize(byteArrayOutputStream);
         if (serviceInterfaceInfo == null) {
             rpcResponse.setStatus(HttpStatus.SC_NOT_FOUND);
             serialize.writeObject(rpcResponse);

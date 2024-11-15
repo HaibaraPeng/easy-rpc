@@ -45,7 +45,7 @@ public class ClientProxyFactory {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, (proxy, method, args) -> {
             // 获取服务信息
             ServiceInterfaceInfo serviceInterfaceInfo = serviceDiscovery.selectOneInstance(clazz.getName());
-            log.debug("select service:{}", serviceInterfaceInfo);
+            log.info("select service:{}", serviceInterfaceInfo);
             if (serviceInterfaceInfo == null) {
                 throw new RpcException("service not found");
             }
@@ -55,7 +55,7 @@ public class ClientProxyFactory {
 
             // 序列化请求
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutput serialize = serialization.serialize(new ByteArrayOutputStream());
+            ObjectOutput serialize = serialization.serialize(byteArrayOutputStream);
             serialize.writeObject(request);
             serialize.flushBuffer();
 
