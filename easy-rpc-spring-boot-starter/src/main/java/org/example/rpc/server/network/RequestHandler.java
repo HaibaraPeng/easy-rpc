@@ -5,7 +5,6 @@ import org.apache.http.HttpStatus;
 import org.example.rpc.common.RpcRequest;
 import org.example.rpc.common.RpcResponse;
 import org.example.rpc.common.ServiceInterfaceInfo;
-import org.example.rpc.serialization.MessageProtocol;
 import org.example.rpc.serialization.ObjectInput;
 import org.example.rpc.serialization.ObjectOutput;
 import org.example.rpc.serialization.Serialization;
