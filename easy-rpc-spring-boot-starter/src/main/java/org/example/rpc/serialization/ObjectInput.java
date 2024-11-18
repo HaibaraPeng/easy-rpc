@@ -25,6 +25,17 @@ public interface ObjectInput extends DataInput {
      */
     <T> T readObject(Class<T> cls) throws IOException, ClassNotFoundException;
 
+    /**
+     * read object
+     *
+     * @param cls object class
+     * @param type object type
+     * @return object
+     * @throws IOException if an I/O error occurs
+     * @throws ClassNotFoundException if an ClassNotFoundException occurs
+     */
+    <T> T readObject(Class<T> cls, Type type) throws IOException, ClassNotFoundException;
+
 
     default Throwable readThrowable() throws IOException, ClassNotFoundException {
         Object obj = readObject();

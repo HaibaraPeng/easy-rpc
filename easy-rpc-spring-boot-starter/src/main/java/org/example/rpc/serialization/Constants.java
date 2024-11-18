@@ -7,4 +7,6 @@ package org.example.rpc.serialization;
 public interface Constants {
 
     byte JAVA_SERIALIZATION_ID = 3;
+
+    byte FASTJSON_SERIALIZATION_ID = 6;
 }

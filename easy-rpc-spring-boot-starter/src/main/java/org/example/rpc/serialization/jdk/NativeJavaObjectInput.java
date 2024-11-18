@@ -92,6 +92,12 @@ public class NativeJavaObjectInput implements ObjectInput {
         return (T) readObject();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T readObject(Class<T> cls, Type type) throws IOException, ClassNotFoundException {
+        return (T) readObject();
+    }
+
     public ObjectInputStream getObjectInputStream() {
         return inputStream;
     }
